@@ -1,0 +1,29 @@
+import numpy as np
+import plotly.graph_objs as go
+
+# data
+x = np.linspace(-10,10,1000)
+P = 0.5*(…bimodal mixture…)  # same as before
+
+# build frames for a grid of μ’s
+mus = np.linspace(-5,5,50)
+frames = []
+for μ in mus:
+    Q = (1/np.sqrt(2*np.pi))*np.exp(-(x-μ)**2/2)
+    frames.append(go.Frame(data=[go.Scatter(y=Q)],
+                           name=str(round(μ,2))))
+fig = go.Figure(
+    data=[go.Scatter(x=x, y=P, name='P'),
+          go.Scatter(x=x, y=frames[0].data[0].y, name='Q')],
+    layout=go.Layout(
+      updatemenus=[dict(type='buttons',
+                        buttons=[dict(label='Play',
+                                      method='animate',
+                                      args=[None])])],
+      sliders=[dict(steps=[dict(method='animate',
+                                label=f'{μ:.2f}',
+                                args=[[str(round(μ,2))]]) for μ in mus])]
+    ),
+    frames=frames
+)
+fig.write_html('kl_slider.html', include_plotlyjs='cdn')
